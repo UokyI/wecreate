@@ -16,3 +16,8 @@
 1. 运行前，需要自行安装Qwen Code CLI
 2. 系统会自动根据where qwen找到qwen code cli的安装路径并自行配置到系统中
 3. 可以直接在设定页面中，自行配置qwen code cli路径
+
+## 运行说明
+1. JDK 1.8
+2. Maven项目
+3. DB:Mysql，需要运行sql文件夹下的建库sql 
