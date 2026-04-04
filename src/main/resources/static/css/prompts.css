@@ -1,0 +1,814 @@
+:root {
+    /* 亮色主题 */
+    --bg-color: #f5f5f5;
+    --container-bg: white;
+    --text-color: #333;
+    --muted-text-color: #999;
+    --border-color: #ddd;
+    --header-bg: #f8f9fa;
+    --input-bg: white;
+    --input-border: #ddd;
+    --btn-primary-bg: #007bff;
+    --btn-primary-hover: #0056b3;
+    --btn-view-bg: #28a745;
+    --btn-view-hover: #218838;
+    --btn-delete-bg: #dc3545;
+    --btn-delete-hover: #c82333;
+    --btn-score-bg: #ffc107;
+    --btn-score-hover: #e0a800;
+    --pagination-bg: #f8f9fa;
+    --pagination-active: #007bff;
+    --modal-bg: white;
+    --log-header-bg: #007bff;
+    --log-content-bg: #f8f9fa;
+    --hover-row: #f5f5f5;
+    --hover-bg: #f0f0f0;
+}
+
+.dark-theme {
+    /* 暗色主题 */
+    --bg-color: #1a1a1a;
+    --container-bg: #2d2d2d;
+    --text-color: #e0e0e0;
+    --muted-text-color: #888;
+    --border-color: #555;
+    --header-bg: #3d3d3d;
+    --input-bg: #3d3d3d;
+    --input-border: #555;
+    --btn-primary-bg: #0069d9;
+    --btn-primary-hover: #0062cc;
+    --btn-view-bg: #218838;
+    --btn-view-hover: #1e7e34;
+    --btn-delete-bg: #c82333;
+    --btn-delete-hover: #bd2130;
+    --btn-score-bg: #e0a800;
+    --btn-score-hover: #d39e00;
+    --pagination-bg: #3d3d3d;
+    --pagination-active: #0069d9;
+    --modal-bg: #2d2d2d;
+    --log-header-bg: #0069d9;
+    --log-content-bg: #3d3d3d;
+    --hover-row: #3d3d3d;
+    --hover-bg: #3a3a3a;
+}
+
+/* 删除评分颜色相关的样式定义，因为我们现在使用简单的红/绿色显示 */
+/* 评分颜色 - 更加现代化的配色方案 */
+
+/*
+.score-bar-container {
+    width: 30px;
+    height:80px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+*/
+
+/*
+.score-bar-segment {
+    flex: 1;
+    width: 100%;
+    border: 0.5px solid rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+*/
+
+/* 水平评分条样式 */
+.score-bar-horizontal {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    border: 1px solid var(--border-color);
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+    width: fit-content;
+}
+
+.score-bar-horizontal .score-option {
+    flex: 1;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+    border-right: 1px solid var(--border-color);
+}
+
+.score-bar-horizontal .score-option:last-child {
+    border-right: none;
+}
+
+/* 鼠标悬停样式变化 */
+.score-bar-horizontal .score-option:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* 不同分数的颜色 */
+.score-bar-horizontal .score-option[data-value="0"] { background-color: #ff0000; color: white; } /* 正红色 */
+.score-bar-horizontal .score-option[data-value="1"] { background-color: #ff3333; color: white; } /* 浅红色 */
+.score-bar-horizontal .score-option[data-value="2"] { background-color: #ff6666; color: white; }
+.score-bar-horizontal .score-option[data-value="3"] { background-color: #ff9999; color: white; }
+.score-bar-horizontal .score-option[data-value="4"] { background-color: #ffcccc; color: black; }
+
+.score-bar-horizontal .score-option[data-value="5"] { background-color: #ccffcc; color: black; }
+.score-bar-horizontal .score-option[data-value="6"] { background-color: #99ff99; color: black; }
+.score-bar-horizontal .score-option[data-value="7"] { background-color: #66ff66; color: black; }
+.score-bar-horizontal .score-option[data-value="8"] { background-color: #33ff33; color: black; }
+.score-bar-horizontal .score-option[data-value="9"] { background-color: #00cc00; color: white; }
+.score-bar-horizontal .score-option[data-value="10"] { background-color: #009900; color: white; } /* 正绿色 */
+
+/* 选中的分数样式 */
+.score-bar-horizontal .score-option.selected {
+    outline: 3px solid #007bff;
+    outline-offset: -3px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 垂直评分条样式 */
+.score-bar-vertical {
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    height: 300px;
+    border: 1px solid var(--border-color);
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.score-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.score-option:last-child {
+    border-bottom: none;
+}
+
+/* 鼠标悬停样式变化 */
+.score-option:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* 不同分数的颜色 */
+.score-option[data-value="0"] { background-color: #ff0000; color: white; } /* 正红色 */
+.score-option[data-value="1"] { background-color: #ff3333; color: white; } /* 浅红色 */
+.score-option[data-value="2"] { background-color: #ff6666; color: white; }
+.score-option[data-value="3"] { background-color: #ff9999; color: white; }
+.score-option[data-value="4"] { background-color: #ffcccc; color: black; }
+
+.score-option[data-value="5"] { background-color: #ccffcc; color: black; }
+.score-option[data-value="6"] { background-color: #99ff99; color: black; }
+.score-option[data-value="7"] { background-color: #66ff66; color: black; }
+.score-option[data-value="8"] { background-color: #33ff33; color: black; }
+.score-option[data-value="9"] { background-color: #00cc00; color: white; }
+.score-option[data-value="10"] { background-color: #009900; color: white; } /* 正绿色 */
+
+/* 选中的分数样式 */
+.score-option.selected {
+    outline: 3px solid #007bff;
+    outline-offset: -3px;
+    position: relative;
+    z-index: 1;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    /* 全局平滑过渡 */
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: var(--container-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+h1 {
+    color: var(--text-color);
+    text-align: center;
+}
+
+.search-box {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-box input, .search-box select {
+    padding: 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-box button {
+    padding: 10px 20px;
+    background-color: var(--btn-primary-bg);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.2s ease;
+}
+
+.search-box button:hover {
+    background-color: var(--btn-primary-hover);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+th {
+    background-color: var(--header-bg);
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+tr {
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+tr:hover {
+    background-color: var(--hover-row);
+}
+
+.actions {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 32px;
+}
+
+.btn-view {
+    background-color: var(--btn-view-bg);
+    color: white;
+}
+
+.btn-delete {
+    background-color: var(--btn-delete-bg);
+    color: white;
+}
+
+.btn-score {
+    background-color: var(--btn-score-bg);
+    color: #212529;
+}
+
+.btn-view:hover {
+    background-color: var(--btn-view-hover);
+}
+
+.btn-delete:hover {
+    background-color: var(--btn-delete-hover);
+}
+
+.btn-score:hover {
+    background-color: var(--btn-score-hover);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    background-color: var(--pagination-bg);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    border-radius: 4px;
+    color: var(--text-color);
+    transition: background-color 0.3s;
+}
+
+.pagination button.active {
+    background-color: var(--pagination-active);
+    color: white;
+}
+
+.pagination button:hover:not(.active) {
+    background-color: var(--hover-row);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+
+.modal.fixed-header .modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.modal-content {
+    background-color: var(--modal-bg);
+    margin: 5% auto;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 1400px;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+    background-color: var(--modal-bg);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal-body {
+    padding: 10px 20px 20px 20px;
+    overflow-y: auto;
+    flex: 1;
+    position: relative;
+    height: calc(80vh - 100px);
+    overflow-y: auto;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.log-item {
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.log-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--log-header-bg);
+    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.log-content {
+    white-space: pre-wrap;
+    background-color: var(--log-content-bg);
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 特别针对详情模态框的样式 */
+#detailModal .modal-content {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#detailModal .modal-header {
+    flex-shrink: 0;
+    background-color: var(--modal-bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--modal-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    position: relative;
+}
+
+#detailModal .modal-header h2 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+#detailModal .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+    height: calc(100% - 60px);
+}
+
+/* 特别针对评分模态框的样式 */
+#scoreModal .modal-content {
+    height: auto;
+    min-height: 250px;
+    max-height: 80vh;
+}
+
+#scoreModal .modal-header {
+    flex-shrink: 0;
+    background-color: var(--modal-bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--modal-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    position: relative;
+}
+
+#scoreModal .modal-header h2 {
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.prompt-content {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4em;
+    max-height: 4.2em;
+    max-width: 400px;
+    word-wrap: break-word;
+}
+
+/* 设置各列宽度 */
+th:nth-child(2), td:nth-child(2) { /* 创建时间列 */
+    width: 10%;
+}
+
+th:nth-child(3), td:nth-child(3) { /* 提示词内容列 */
+    width: 37%;
+}
+
+th:nth-child(4), td:nth-child(4) { /* 耗时列 */
+    width: 8%;
+}
+
+th:nth-child(5), td:nth-child(5) { /* Trace ID列 */
+    width: 10%;
+}
+
+th:nth-child(6), td:nth-child(6) { /* 请求IP列 */
+    width: 10%;
+}
+
+th:nth-child(7), td:nth-child(7) { /* 可用性列 */
+    width: 8%;
+}
+
+th:nth-child(8), td:nth-child(8) { /* 评价人列 */
+    width: 7%;
+}
+
+th:nth-child(9), td:nth-child(9) { /* 操作列 */
+    width: 10%;
+}
+
+.score-user {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-weight: bold;
+}
+
+.score-input {
+    width: 60px;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+.user-id-input {
+    width: 100px;
+    padding: 5px;
+    margin-right: 5px;
+}
+
+/* 基础数据展示样式 */
+.basic-data-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--header-bg);
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.basic-data-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.basic-data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.data-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.data-label {
+    font-weight: bold;
+    margin-bottom: 3px;
+    color: var(--text-color);
+}
+
+.data-value {
+    padding: 5px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 3px;
+    color: var(--text-color);
+    word-break: break-all;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section-title {
+    margin: 20px 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.no-logs {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    padding: 20px;
+}
+
+.prompt-content-detail {
+    padding: 10px;
+    background-color: var(--log-content-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 200px;
+    overflow-y: auto;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}:root {
+    /* 亮色主题 */
+    --bg-color: #f5f5f5;
+    --container-bg: white;
+    --text-color: #333;
+    --muted-text-color: #999;
+    --border-color: #ddd;
+    --header-bg: #f8f9fa;
+    --input-bg: white;
+    --input-border: #ddd;
+    --btn-primary-bg: #007bff;
+    --btn-primary-hover: #0056b3;
+    --btn-view-bg: #28a745;
+    --btn-view-hover: #218838;
+    --btn-delete-bg: #dc3545;
+    --btn-delete-hover: #c82333;
+    --btn-score-bg: #ffc107;
+    --btn-score-hover: #e0a800;
+    --pagination-bg: #f8f9fa;
+    --pagination-active: #007bff;
+    --modal-bg: white;
+    --log-header-bg: #007bff;
+    --log-content-bg: #f8f9fa;
+    --hover-row: #f5f5f5;
+    --hover-bg: #f0f0f0;
+}
+
+.dark-theme {
+    /* 暗色主题 */
+    --bg-color: #1a1a1a;
+    --container-bg: #2d2d2d;
+    --text-color: #e0e0e0;
+    --muted-text-color: #888;
+    --border-color: #555;
+    --header-bg: #3d3d3d;
+    --input-bg: #3d3d3d;
+    --input-border: #555;
+    --btn-primary-bg: #0069d9;
+    --btn-primary-hover: #0062cc;
+    --btn-view-bg: #218838;
+    --btn-view-hover: #1e7e34;
+    --btn-delete-bg: #c82333;
+    --btn-delete-hover: #bd2130;
+    --btn-score-bg: #e0a800;
+    --btn-score-hover: #d39e00;
+    --pagination-bg: #3d3d3d;
+    --pagination-active: #0069d9;
+    --modal-bg: #2d2d2d;
+    --log-header-bg: #0069d9;
+    --log-content-bg: #3d3d3d;
+    --hover-row: #3d3d3d;
+    --hover-bg: #3a3a3a;
+}
+
+/* 删除评分颜色相关的样式定义，因为我们现在使用简单的红/绿色显示 */
+/* 评分颜色 - 更加现代化的配色方案 */
+
+/*
+.score-bar-container {
+    width: 30px;
+    height:80px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+*/
+
+/*
+.score-bar-segment {
+    flex: 1;
+    width: 100%;
+    border: 0.5px solid rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+*/
+
+/* 水平评分条样式 */
+.score-bar-horizontal {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    border: 1px solid var(--border-color);
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+    width: fit-content;
+}
+
+.score-bar-horizontal .score-option {
+    flex: 1;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+    border-right: 1px solid var(--border-color);
+}
+
+.score-bar-horizontal .score-option:last-child {
+    border-right: none;
+}
+
+/* 鼠标悬停样式变化 */
+.score-bar-horizontal .score-option:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* 不同分数的颜色 */
+.score-bar-horizontal .score-option[data-value="0"] { background-color: #ff0000; color: white; } /* 正红色 */
+.score-bar-horizontal .score-option[data-value="1"] { background-color: #ff3333; color: white; } /* 浅红色 */
+.score-bar-horizontal .score-option[data-value="2"] { background-color: #ff6666; color: white; }
+.score-bar-horizontal .score-option[data-value="3"] { background-color: #ff9999; color: white; }
+.score-bar-horizontal .score-option[data-value="4"] { background-color: #ffcccc; color: black; }
+
+.score-bar-horizontal .score-option[data-value="5"] { background-color: #ccffcc; color: black; }
+.score-bar-horizontal .score-option[data-value="6"] { background-color: #99ff99; color: black; }
+.score-bar-horizontal .score-option[data-value="7"] { background-color: #66ff66; color: black; }
+.score-bar-horizontal .score-option[data-value="8"] { background-color: #33ff33; color: black; }
+.score-bar-horizontal .score-option[data-value="9"] { background-color: #00cc00; color: white; }
+.score-bar-horizontal .score-option[data-value="10"] { background-color: #009900; color: white; } /* 正绿色 */
+
+/* 选中的分数样式 */
+.score-bar-horizontal .score-option.selected {
+    outline: 3px solid #007bff;
+    outline-offset: -3px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 垂直评分条样式 */
+.score-bar-vertical {
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    height: 300px;
+    border: 1px solid var(--border-color);
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+

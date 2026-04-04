@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志页面 - 根据Trace ID查看日志</title>
+    <style>
+        :root {
+            /* 亮色主题 */
+            --bg-color: #f5f5f5;
+            --container-bg: white;
+            --text-color: #333;
+            --border-color: #ddd;
+            --input-bg: white;
+            --input-border: #ddd;
+            --btn-primary-bg: #007bff;
+            --btn-primary-hover: #0056b3;
+            --log-item-bg: #f8f9fa;
+            --log-content-bg: white;
+        }
+
+        .dark-theme {
+            /* 暗色主题 */
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --border-color: #555;
+            --input-bg: #3d3d3d;
+            --input-border: #555;
+            --btn-primary-bg: #0069d9;
+            --btn-primary-hover: #0062cc;
+            --log-item-bg: #3d3d3d;
+            --log-content-bg: #4d4d4d;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .search-box button {
+            padding: 10px 20px;
+            background-color: var(--btn-primary-bg);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-box button:hover {
+            background-color: var(--btn-primary-hover);
+        }
+        .log-container {
+            margin-top: 20px;
+        }
+        .log-item {
+            border: 1px solid var(--border-color);
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: var(--log-item-bg);
+            transition: background-color 0.3s;
+        }
+        .log-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #007bff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .log-content {
+            white-space: pre-wrap;
+            background-color: var(--log-content-bg);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s;
+        }
+        .error-message {
+            color: #ff6b6b;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+        .info-message {
+            color: #007bff;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>调试页面 - 根据Trace ID查看日志</h1>
+        
+        <div class="search-box">
+            <input type="text" id="traceIdInput" placeholder="请输入Trace ID...">
+            <button onclick="searchByTraceId()">查询日志</button>
+            <button onclick="clearResults()">清空结果</button>
+        </div>
+        
+        <div id="resultsContainer" class="log-container">
+            <!-- 查询结果将在这里显示 -->
+            <div class="info-message">请输入Trace ID进行查询</div>
+        </div>
+    </div>
+
+    <script>
+        // 添加键盘快捷键监听器
+        document.addEventListener('keydown', function(event) {
+            // 检查是否按下了 F2 键
+            if (event.key === 'F2') {
+                event.preventDefault();
+                window.location.href = '/';
+            }
+            // 检查是否按下了 F8 键切换主题
+            else if (event.key === 'F8') {
+                event.preventDefault();
+                document.body.classList.toggle('dark-theme');
+                // 保存主题偏好到 localStorage
+                const isDarkTheme = document.body.classList.contains('dark-theme');
+                localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+            }
+        });
+        
+        // 页面加载时恢复主题设置
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+            
+            // 从URL参数获取traceId并自动查询
+            const urlParams = new URLSearchParams(window.location.search);
+            const traceIdParam = urlParams.get('traceId');
+            if (traceIdParam) {
+                document.getElementById('traceIdInput').value = traceIdParam;
+                searchByTraceId();
+            }
+        });
+        
+        // 根据Trace ID查询日志
+        function searchByTraceId() {
+            const traceId = document.getElementById('traceIdInput').value.trim();
+            
+            if (!traceId) {
+                alert('请输入Trace ID');
+                return;
+            }
+            
+            // 显示加载中状态
+            document.getElementById('resultsContainer').innerHTML = '<div class="loading">查询中...</div>';
+            
+            // 调用后端接口查询日志 (改为POST请求)
+            fetch(`/api/logs/trace`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ traceId: traceId, asc: 'true' })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(logs => {
+                    displayLogs(logs);
+                })
+                .catch(error => {
+                    console.error('Error fetching logs:', error);
+                    document.getElementById('resultsContainer').innerHTML = 
+                        `<div class="error-message">查询失败: ${error.message}</div>`;
+                });
+        }
+        
+        // 显示日志结果
+        function displayLogs(logs) {
+            const container = document.getElementById('resultsContainer');
+            
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div class="info-message">未找到相关日志</div>';
+                return;
+            }
+            
+            // 定义HTML实体编码函数
+            function escapeHtml(text) {
+                if (typeof text !== 'string') {
+                    return text;
+                }
+                return text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#x27;')
+                    .replace(/`/g, '&#x60;');
+            }
+            
+            let html = '';
+            logs.forEach(log => {
+                // 处理时间格式
+                const createTime = log.createTime ? new Date(log.createTime).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    fractionalSecondDigits: 3
+                }) : '';
+                
+                html += `
+                    <div class="log-item">
+                        <div class="log-header">
+                            <span>类型: ${escapeHtml(log.type || 'N/A')}</span>
+                            <span>时间: ${escapeHtml(createTime)}</span>
+                        </div>
+                        <div class="log-content">${escapeHtml(log.content || '无内容')}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // 清空查询结果
+        function clearResults() {
+            document.getElementById('traceIdInput').value = '';
+            document.getElementById('resultsContainer').innerHTML = '<div class="info-message">请输入Trace ID进行查询</div>';
+        }
+        
+        // 支持回车键查询
+        document.getElementById('traceIdInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchByTraceId();
+            }
+        });
+    </script>
+</body>
+</html>

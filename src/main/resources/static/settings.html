@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统配置 - WeCreate</title>
+    <link rel="stylesheet" href="css/prompts.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <style>
+        /* 配置卡片样式 */
+        .config-card {
+            background: var(--container-bg, #fff);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color, #e8e8e8);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .config-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .config-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color, #333);
+        }
+
+        .config-desc {
+            font-size: 13px;
+            color: var(--text-secondary, #666);
+            margin-bottom: 12px;
+        }
+
+        .config-value-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: nowrap;
+        }
+
+        .config-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color, #d9d9d9);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #333);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .config-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+
+        .config-select {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid var(--border-color, #d9d9d9);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--input-bg, #fff);
+            color: var(--text-color, #333);
+            min-width: 100px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8.825L1.175 4 2.238 2.938 6 6.7l3.763-3.763L10.825 4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+        }
+
+        .config-select:hover {
+            border-color: #40a9ff;
+        }
+
+        .config-select:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+
+        .config-btn-save {
+            padding: 8px 20px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .config-btn-save:hover {
+            background: #40a9ff;
+        }
+
+        .config-btn-save:active {
+            transform: scale(0.98);
+        }
+
+        /* 状态标签 */
+        .config-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
+        .config-status-enabled {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        .config-status-disabled {
+            background: #fff2f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+
+        /* 提示消息 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast-success {
+            background: #52c41a;
+        }
+
+        .toast-error {
+            background: #ff4d4f;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            padding-top: 80px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color, #333);
+            margin-bottom: 24px;
+            transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-color, #f5f5f5);
+            transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main-content {
+            background-color: var(--bg-color, #f5f5f5);
+        }
+
+        .page-desc {
+            font-size: 14px;
+            color: var(--muted-text-color, #666);
+            margin-bottom: 24px;
+            transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 暗色主题适配 */
+        body.dark-theme .config-card {
+            background: var(--container-bg);
+            border-color: var(--border-color);
+        }
+
+        body.dark-theme .config-label {
+            color: var(--text-color);
+        }
+
+        body.dark-theme .config-desc {
+            color: var(--muted-text-color);
+        }
+
+        body.dark-theme .config-input {
+            background: var(--input-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        body.dark-theme .config-select {
+            background-color: #3d3d3d !important;
+            color: #e0e0e0 !important;
+            border-color: #555 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e0e0e0' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 10px center !important;
+            background-size: 12px !important;
+            padding-right: 32px !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+
+        body.dark-theme .config-select option {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        body.dark-theme .page-title {
+            color: var(--text-color);
+        }
+
+        body.dark-theme .config-status-enabled {
+            background: #1e4a1e;
+            color: #52c41a;
+            border-color: #2e7d32;
+        }
+
+        body.dark-theme .config-status-disabled {
+            background: #5c1e1e;
+            color: #ff4d4f;
+            border-color: #8b0000;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <a href="/list.html" class="navbar-logo">
+                    <span>🚀</span>
+                    <span>WeCreate</span>
+                </a>
+                <div class="navbar-menu" id="navbarMenu">
+                    <a href="/index.html" class="navbar-menu-item">
+                        <span class="icon">📁</span>
+                        <span>项目管理</span>
+                    </a>
+                    <a href="/excrecord.html" class="navbar-menu-item">
+                        <span class="icon">💬</span>
+                        <span>执行记录</span>
+                    </a>
+                    <a href="/pro/index.html" class="navbar-menu-item">
+                        <span class="icon">📤</span>
+                        <span>派发任务</span>
+                    </a>
+                    <a href="/async/ass/index.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">⚡</span>
+                        <span>异步测试</span>
+                    </a>
+                    <a href="/debug.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">🐛</span>
+                        <span>日志调试</span>
+                    </a>
+                    <a href="/lan.html" class="navbar-menu-item">
+                        <span class="icon">📡</span>
+                        <span>局域网访问</span>
+                    </a>
+                    <a href="/settings.html" class="navbar-menu-item active">
+                        <span class="icon">⚙️</span>
+                        <span>系统配置</span>
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDarkTheme()" title="切换主题 (F8)">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <div class="navbar-toggle" onclick="toggleNavbarMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+<!--        <h1 class="page-title">系统配置</h1>-->
+<!--        <p class="page-desc">管理系统各项配置，包括记忆功能开关、CLI 路径等。修改后即时生效。</p>-->
+
+        <div id="configContainer">
+            <!-- 配置卡片由 JS 动态生成 -->
+        </div>
+    </div>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 先加载导航栏 JS -->
+    <script src="js/navbar.js"></script>
+    <script>
+        // 全局配置数据
+        let configData = [];
+
+        // 页面加载时获取配置
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfigs();
+        });
+
+        // 加载所有配置
+        async function loadConfigs() {
+            try {
+                const response = await fetch('/api/config/list');
+                const result = await response.json();
+                if (result.code === 200 && result.data) {
+                    configData = result.data;
+                    renderConfigs(configData);
+                } else {
+                    showToast('加载配置失败: ' + (result.msg || '未知错误'), 'error');
+                }
+            } catch (error) {
+                console.error('加载配置失败:', error);
+                showToast('加载配置失败: ' + error.message, 'error');
+            }
+        }
+
+        // 渲染配置卡片
+        function renderConfigs(configs) {
+            const container = document.getElementById('configContainer');
+            container.innerHTML = '';
+
+            configs.forEach(config => {
+                const card = document.createElement('div');
+                card.className = 'config-card';
+                card.id = 'config-card-' + config.key;
+
+                let valueControl = '';
+                if (config.key === 'MEMORY_ENABLED') {
+                    // 记忆功能开关使用下拉选择
+                    const statusTag = config.value === 'Y'
+                        ? '<span class="config-status config-status-enabled">已开启</span>'
+                        : '<span class="config-status config-status-disabled">已关闭</span>';
+                    valueControl = `
+                        <select class="config-select" id="select-${config.key}" onchange="updateSelectLabel('${config.key}')">
+                            <option value="Y" ${config.value === 'Y' ? 'selected' : ''}>Y - 开启</option>
+                            <option value="N" ${config.value === 'N' ? 'selected' : ''}>N - 关闭</option>
+                        </select>
+                        ${statusTag}
+                    `;
+                } else {
+                    // 其他配置使用文本输入框
+                    valueControl = `<input type="text" class="config-input" id="input-${config.key}" value="${config.value || ''}" placeholder="请输入${config.label}">`;
+                }
+
+                card.innerHTML = `
+                    <div class="config-header">
+                        <span class="config-label">${config.label}</span>
+                    </div>
+                    <div class="config-desc">${config.description}</div>
+                    <div class="config-value-row">
+                        ${valueControl}
+                        <button class="config-btn-save" onclick="saveConfig('${config.key}')">保存</button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // 更新选择框标签
+        function updateSelectLabel(key) {
+            const card = document.getElementById('config-card-' + key);
+            const select = document.getElementById('select-' + key);
+            const existingTag = card.querySelector('.config-status');
+            if (existingTag) {
+                existingTag.remove();
+            }
+
+            const tag = document.createElement('span');
+            tag.className = select.value === 'Y' ? 'config-status config-status-enabled' : 'config-status config-status-disabled';
+            tag.textContent = select.value === 'Y' ? '已开启' : '已关闭';
+            card.querySelector('.config-select').after(tag);
+        }
+
+        // 保存配置
+        async function saveConfig(key) {
+            let value;
+            if (key === 'MEMORY_ENABLED') {
+                value = document.getElementById('select-' + key).value;
+            } else {
+                value = document.getElementById('input-' + key).value.trim();
+            }
+
+            if (!value) {
+                showToast('配置值不能为空', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, value, updateUser: 'System' })
+                });
+                const result = await response.json();
+                if (result.code === 200) {
+                    showToast('配置保存成功', 'success');
+                    // 刷新配置列表
+                    loadConfigs();
+                } else {
+                    showToast('保存失败: ' + (result.msg || '未知错误'), 'error');
+                }
+            } catch (error) {
+                console.error('保存配置失败:', error);
+                showToast('保存配置失败: ' + error.message, 'error');
+            }
+        }
+
+        // 显示提示消息
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast toast-' + type + ' show';
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

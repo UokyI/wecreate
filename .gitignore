@@ -1,0 +1,10 @@
+# 忽略根目录下的.idea文件夹
+.idea/
+.lingma/
+.qwen/
+# 忽略所有层级的target文件夹
+target/
+log/
+kernel*.json
+launch*.py
+*.iml

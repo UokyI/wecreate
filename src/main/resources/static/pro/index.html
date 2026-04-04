@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>派发任务 - WeCreate</title>
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <style>
+        :root {
+            /* 亮色主题 */
+            --bg-color: #ffffff;
+            --container-bg: #ffffff;
+            --text-color: #000000;
+            --border-color: #ddd;
+            --header-border: #ddd;
+            --user-info-bg: #f0f8ff;
+            --path-info-bg: #fff8dc;
+            --warning-bg: #fcf8e3;
+            --warning-border: #ff9800;
+            --input-border: #ddd;
+            --btn-primary-bg: #007bff;
+            --btn-primary-hover: #0056b3;
+            --btn-disabled-bg: #ccc;
+            --output-border: #ddd;
+            --message-info-bg: #e7f3ff;
+            --message-info-border: #2196F3;
+            --message-complete-bg: #dff0d8;
+            --message-complete-border: #4CAF50;
+            --message-success-bg: #dff0d8;
+            --message-success-border: #4CAF50;
+            --message-error-bg: #f2dede;
+            --message-error-border: #F44336;
+            --message-warning-bg: #fff3cd;
+            --message-warning-border: #ffc107;
+        }
+
+        .dark-theme {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --border-color: #555;
+            --header-border: #555;
+            --user-info-bg: #3d3d3d;
+            --path-info-bg: #4a3c00;
+            --warning-bg: #4a3c00;
+            --warning-border: #ff9800;
+            --input-border: #555;
+            --btn-primary-bg: #0069d9;
+            --btn-primary-hover: #0062cc;
+            --btn-disabled-bg: #555;
+            --output-border: #555;
+            --message-info-bg: #1e3a5f;
+            --message-info-border: #2196F3;
+            --message-complete-bg: #1e4a1e;
+            --message-complete-border: #4CAF50;
+            --message-success-bg: #1e4a1e;
+            --message-success-border: #4CAF50;
+            --message-error-bg: #5c1e1e;
+            --message-error-border: #F44336;
+            --message-warning-bg: #4a3c00;
+            --message-warning-border: #ffc107;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            margin: 0 auto;
+            padding: 20px 0px;
+        }
+
+        .input-section,
+        .output-section {
+            box-sizing: border-box;
+        }
+
+        .input-section h2,
+        .output-section h2 {
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0 0 10px 0;
+            padding: 0;
+        }
+
+        .input-section h2,
+        .output-section h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        #requestInput,
+        .execute-controls,
+        .execution-output-box {
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--header-border);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: var(--user-info-bg);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .path-info {
+            background: var(--path-info-bg);
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border: 1px solid var(--warning-border);
+        }
+
+        .warning {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        #userInput:focus {
+            outline: none;
+            border-color: var(--btn-primary-bg);
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--btn-primary-hover);
+        }
+
+        .btn:disabled {
+            background: var(--btn-disabled-bg);
+            cursor: not-allowed;
+        }
+
+        .execute-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            background: var(--container-bg);
+            color: var(--text-primary);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-secondary:hover {
+            border-color: #3b82f6;
+            background: #f0f7ff;
+            color: #3b82f6;
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-selector label {
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .model-selector select {
+            padding: 8px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 140px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
+        body.dark-theme .model-selector select,
+        .dark-theme .model-selector select {
+            background-color: #3d3d3d !important;
+            color: #e0e0e0 !important;
+            border-color: #555 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e0e0e0' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 10px center !important;
+            padding-right: 30px !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+
+        body.dark-theme .model-selector select option,
+        .dark-theme .model-selector select option {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .model-selector select:hover {
+            border-color: #3b82f6;
+        }
+
+        .model-selector select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .output-section {
+            margin-top: 20px;
+        }
+
+        .output-section h2 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .output-section h2::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-radius: 2px;
+        }
+
+        .execution-output-box {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            background: #fafbfc;
+            position: relative !important;
+            isolation: isolate;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            scroll-padding-top: 0;
+        }
+
+        .execution-output-box:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .execution-output-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .execution-output-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .execution-output-box::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        .execution-output-box::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 12px 16px;
+            border-radius: 6px;
+            border-left: 3px solid transparent;
+            transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            scroll-margin-top: 0;
+        }
+
+        .message:first-child {
+            margin-top: 0;
+        }
+
+        .message:last-child {
+            margin-bottom: 0;
+        }
+
+        .message:hover {
+            background-color: rgba(59, 130, 246, 0.02);
+        }
+
+        .message.info {
+            background: #eff6ff;
+            border-left-color: #3b82f6;
+        }
+
+        .message.warning {
+            background: #fffbeb;
+            border-left-color: #f59e0b;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+
+        .message.success {
+            background: #ecfdf5;
+            border-left-color: #10b981;
+        }
+
+        .message.system {
+            background: #f9fafb;
+            border-left-color: #6b7280;
+        }
+
+        .message-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding-left: 8px;
+        }
+
+        .message-icon {
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+            margin-right: 5px;
+        }
+
+        /* 在线批量任务弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-container {
+            background: var(--container-bg, #fff);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 750px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color, #e5e7eb);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--text-color, #333);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #9ca3af;
+            line-height: 1;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #374151;
+        }
+
+        .modal-body {
+            padding: 16px 24px;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-hint {
+            margin: 0 0 12px 0;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .batch-json-editor {
+            flex: 1;
+            min-height: 300px;
+            padding: 16px;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            background: #fafbfc;
+            color: var(--text-color, #333);
+            outline: none;
+            transition: border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .batch-json-editor:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 14px 24px;
+            border-top: 1px solid var(--border-color, #e5e7eb);
+        }
+
+        .modal-footer .btn-primary {
+            padding: 10px 28px;
+        }
+
+        /* 暗色主题适配 */
+        body.dark-theme .execution-output-box {
+            background: #1e1e2e;
+            border-color: #444;
+        }
+        
+        body.dark-theme .execution-output-box::-webkit-scrollbar-thumb {
+            background: #666;
+        }
+        
+        body.dark-theme .message.info {
+            background: #1e3a5f;
+            border-left-color: #3b82f6;
+        }
+        
+        body.dark-theme .message.warning {
+            background: #4a3c00;
+            border-left-color: #f59e0b;
+        }
+        
+        body.dark-theme .message.error {
+            background: #5c1e1e;
+            border-left-color: #ef4444;
+        }
+        
+        body.dark-theme .message.success {
+            background: #1e4a1e;
+            border-left-color: #10b981;
+        }
+        
+        body.dark-theme .message.system {
+            background: #2a2a2a;
+            border-left-color: #999;
+        }
+
+        body.dark-theme .output {
+            background: var(--container-bg);
+        }
+
+        body.dark-theme .batch-json-editor {
+            background: #1e1e2e;
+            color: #cdd6f4;
+        }
+
+        body.dark-theme .modal-close:hover {
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <a href="/list.html" class="navbar-logo">
+                    <span>🚀</span>
+                    <span>WeCreate</span>
+                </a>
+                <div class="navbar-menu" id="navbarMenu">
+                    <a href="/index.html" class="navbar-menu-item">
+                        <span class="icon">📁</span>
+                        <span>项目管理</span>
+                    </a>
+                    <a href="/excrecord.html" class="navbar-menu-item">
+                        <span class="icon">💬</span>
+                        <span>执行记录</span>
+                    </a>
+                    <a href="/pro/index.html" class="navbar-menu-item active">
+                        <span class="icon">📤</span>
+                        <span>派发任务</span>
+                    </a>
+                    <a href="/async/ass/index.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">⚡</span>
+                        <span>异步测试</span>
+                    </a>
+                    <a href="/debug.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">🐛</span>
+                        <span>日志调试</span>
+                    </a>
+                    <a href="/lan.html" class="navbar-menu-item">
+                        <span class="icon">📡</span>
+                        <span>局域网访问</span>
+                    </a>
+                    <a href="/settings.html" class="navbar-menu-item">
+                        <span class="icon">⚙️</span>
+                        <span>系统配置</span>
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDarkTheme()" title="切换主题 (F8)">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <div class="navbar-toggle" onclick="toggleNavbarMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="header">
+            <h1>派发任务</h1>
+            <div class="user-info">
+                <div class="info-item">IP: <span id="ip">加载中...</span></div>
+                <div class="info-item" id="actualIPRow" style="display: none;">实际 IP: <span id="actualIP"></span></div>
+            </div>
+        </div>
+
+        <div class="path-info" id="pathInfo">
+            派发路径：<span id="path">加载中...</span>
+        </div>
+
+        <div class="container">
+            <div class="input-section">
+                <h2>任务描述</h2>
+                <textarea id="requestInput" placeholder="例如：在当前文件夹中，创建一个 springboot 后端项目"></textarea>
+                <div class="execute-controls">
+                    <button id="executeBtn" disabled>🚀 派发任务</button>
+                    <button id="singleFileBtn" class="btn-secondary" disabled>📄 单文件派送</button>
+                    <button id="batchFileBtn" class="btn-secondary" disabled>📦 批量派送</button>
+                    <button id="onlineBatchBtn" class="btn-secondary" disabled>📝 在线创建批量任务</button>
+                    <div class="model-selector">
+                        <label for="modelSelect">模型：</label>
+                        <select id="modelSelect">
+                            <option value="qwen3.6-plus" selected>qwen3.6-plus</option>
+                            <option value="qwen3.5-plus">qwen3.5-plus</option>
+                            <option value="qwen-max">qwen-max</option>
+                            <option value="qwen-plus">qwen-plus</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 隐藏的文件选择器 -->
+                <input type="file" id="singleFileInput" accept=".txt,.md" style="display: none;">
+                <input type="file" id="batchFileInput" accept=".json,.txt" style="display: none;">
+            </div>
+
+            <div class="output-section">
+                <h2>执行结果</h2>
+                <div id="sse-execution-output-container" class="execution-output-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 在线创建批量任务弹窗 -->
+    <div id="batchModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>📝 在线创建批量任务</h3>
+                <button class="modal-close" id="modalCloseBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-hint">编辑批量任务 JSON，每行一个需求，点击派送即可执行。</p>
+                <textarea id="batchJsonEditor" class="batch-json-editor" spellcheck="false"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="resetTemplateBtn">🔄 重置模板</button>
+                <button class="btn-primary" id="modalSendBtn">🚀 立即派送</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入导航栏 JS -->
+    <script src="/js/navbar.js"></script>
+    <script>
+        // 页面加载时获取用户信息和可操作路径
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentUrl = window.location.href;
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('projectId');
+
+            // 获取访问者 IP
+            fetchIP();
+
+            // 如果有 projectId 参数，查询项目信息
+            if (projectId) {
+                fetch(`/api/projects/${projectId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('API 返回数据:', data);
+                        if (data.code === 200) {
+                            const project = data.data;
+                            if (project && project.localPath) {
+                                console.log('从 API 获取项目信息:', project.projectName, project.localPath);
+                                document.getElementById('path').textContent = project.localPath;
+                                document.getElementById('executeBtn').disabled = false;
+                                document.getElementById('singleFileBtn').disabled = false;
+                                document.getElementById('batchFileBtn').disabled = false;
+                                document.getElementById('onlineBatchBtn').disabled = false;
+                                
+                                // 显示项目信息提示
+                                showProjectInfoNotice(project);
+                            } else {
+                                document.getElementById('path').textContent = '项目路径不存在';
+                                document.getElementById('pathInfo').className = 'path-info warning';
+                                document.getElementById('executeBtn').disabled = true;
+                            }
+                        } else {
+                            document.getElementById('path').textContent = data.msg || data.message || '获取项目信息失败';
+                            document.getElementById('pathInfo').className = 'path-info warning';
+                            document.getElementById('executeBtn').disabled = true;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取项目信息失败:', error);
+                        document.getElementById('path').textContent = '获取项目信息失败';
+                        document.getElementById('pathInfo').className = 'path-info warning';
+                        document.getElementById('executeBtn').disabled = true;
+                    });
+            } else {
+                // 没有 projectId 参数，尝试获取用户路径
+                fetch(`/api/userpath/info?url=${encodeURIComponent(currentUrl)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            document.getElementById('path').textContent = data.path;
+                            document.getElementById('executeBtn').disabled = false;
+                            document.getElementById('singleFileBtn').disabled = false;
+                            document.getElementById('batchFileBtn').disabled = false;
+                            document.getElementById('onlineBatchBtn').disabled = false;
+                        } else {
+                            document.getElementById('path').textContent = '无权限';
+                            document.getElementById('pathInfo').className = 'path-info warning';
+                            document.getElementById('executeBtn').disabled = true;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('获取用户信息失败:', error);
+                        document.getElementById('path').textContent = '获取失败';
+                        document.getElementById('pathInfo').className = 'path-info warning';
+                        document.getElementById('executeBtn').disabled = true;
+                    });
+            }
+
+            // 派发任务按钮事件
+            const executeBtn = document.getElementById('executeBtn');
+            const requestInput = document.getElementById('requestInput');
+            const modelSelect = document.getElementById('modelSelect');
+            const outputContainer = document.getElementById('sse-execution-output-container');
+
+            executeBtn.addEventListener('click', async () => {
+                const requestText = requestInput.value.trim();
+                if (!requestText) {
+                    showMessage('请输入任务描述', 'warning');
+                    return;
+                }
+
+                // 从 URL 参数中获取 projectId
+                const urlParams2 = new URLSearchParams(window.location.search);
+                const projectId = urlParams2.get('projectId');
+
+                if (!projectId) {
+                    showMessage('未指定项目ID，请从项目列表页面进入', 'error');
+                    return;
+                }
+
+                // 获取选择的模型
+                const selectedModel = modelSelect.value;
+
+                // 禁用按钮，显示加载状态
+                executeBtn.disabled = true;
+                executeBtn.textContent = '⏳ 执行中...';
+
+                // 清空之前的输出
+                outputContainer.innerHTML = '';
+
+                try {
+                    // 使用 fetch + ReadableStream 实现 SSE
+                    const response = await fetch(`/api/cli/execute/${encodeURIComponent(projectId)}?model=${encodeURIComponent(selectedModel)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestText)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    let currentEvent = 'message'; // 默认事件类型
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || ''; // 保留最后一个不完整的行
+
+                        for (const line of lines) {
+                            const trimmedLine = line.trim();
+                            
+                            // 解析 SSE 事件名
+                            if (trimmedLine.startsWith('event:')) {
+                                currentEvent = trimmedLine.substring(6).trim();
+                                continue;
+                            }
+                            
+                            // 解析 SSE 数据
+                            if (trimmedLine.startsWith('data:')) {
+                                const data = trimmedLine.substring(5).trim();
+                                if (data) {
+                                    console.log('收到 SSE 数据:', data);
+                                    
+                                    // 根据事件类型显示不同样式
+                                    let messageType = 'info';
+                                    if (currentEvent === 'error') {
+                                        messageType = 'error';
+                                    } else if (currentEvent === 'warning') {
+                                        messageType = 'warning';
+                                    } else if (currentEvent === 'connected' || currentEvent === 'system') {
+                                        messageType = 'info';
+                                    }
+
+                                    console.log('调用 appendOutput, 类型:', messageType);
+                                    appendOutput(data, messageType);
+                                    console.log('appendOutput 调用完成');
+                                }
+                            }
+                            
+                            // 空行表示一个完整的事件结束，重置事件类型
+                            if (trimmedLine === '') {
+                                currentEvent = 'message';
+                            }
+                        }
+                    }
+
+                    // showMessage('任务执行完成', 'success');
+                    executeBtn.disabled = false;
+                    executeBtn.textContent = '🚀 派发任务';
+
+                } catch (error) {
+                    console.error('派发任务失败:', error);
+                    // showMessage('派发任务失败: ' + error.message, 'error');
+                    executeBtn.disabled = false;
+                    executeBtn.textContent = '🚀 派发任务';
+                }
+            });
+
+            // 单文件派送按钮事件
+            const singleFileBtn = document.getElementById('singleFileBtn');
+            const singleFileInput = document.getElementById('singleFileInput');
+
+            singleFileBtn.addEventListener('click', () => {
+                singleFileInput.click();
+            });
+
+            singleFileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const urlParams2 = new URLSearchParams(window.location.search);
+                const projectId = urlParams2.get('projectId');
+                if (!projectId) {
+                    showMessage('未指定项目ID，请从项目列表页面进入', 'error');
+                    return;
+                }
+
+                try {
+                    const content = await file.text();
+                    const selectedModel = modelSelect.value;
+
+                    singleFileBtn.disabled = true;
+                    singleFileBtn.textContent = '⏳ 派送中...';
+                    outputContainer.innerHTML = '';
+
+                    const response = await fetch(`/api/cli/execute/file/${encodeURIComponent(projectId)}?model=${encodeURIComponent(selectedModel)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(content)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    let currentEvent = 'message';
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+
+                        for (const line of lines) {
+                            const trimmedLine = line.trim();
+                            if (trimmedLine.startsWith('event:')) {
+                                currentEvent = trimmedLine.substring(6).trim();
+                                continue;
+                            }
+                            if (trimmedLine.startsWith('data:')) {
+                                const data = trimmedLine.substring(5).trim();
+                                let messageType = currentEvent;
+                                if (messageType === 'message') messageType = 'info';
+                                else if (messageType === 'error') messageType = 'error';
+                                else if (messageType === 'warning') messageType = 'warning';
+                                else if (messageType === 'complete') messageType = 'success';
+                                else if (messageType === 'system') messageType = 'system';
+                                else if (messageType === 'connected') messageType = 'info';
+                                appendOutput(data, messageType);
+                            }
+                            if (trimmedLine === '') {
+                                currentEvent = 'message';
+                            }
+                        }
+                    }
+
+                    singleFileBtn.disabled = false;
+                    singleFileBtn.textContent = '📄 单文件派送';
+                } catch (error) {
+                    console.error('单文件派送失败:', error);
+                    showMessage('单文件派送失败: ' + error.message, 'error');
+                    singleFileBtn.disabled = false;
+                    singleFileBtn.textContent = '📄 单文件派送';
+                }
+
+                // 重置文件输入，允许重复选择同一文件
+                e.target.value = '';
+            });
+
+            // 批量派送按钮事件
+            const batchFileBtn = document.getElementById('batchFileBtn');
+            const batchFileInput = document.getElementById('batchFileInput');
+
+            batchFileBtn.addEventListener('click', () => {
+                batchFileInput.click();
+            });
+
+            batchFileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const urlParams2 = new URLSearchParams(window.location.search);
+                const projectId = urlParams2.get('projectId');
+                if (!projectId) {
+                    showMessage('未指定项目ID，请从项目列表页面进入', 'error');
+                    return;
+                }
+
+                try {
+                    const content = await file.text();
+                    const requestsData = JSON.parse(content);
+
+                    // 验证 JSON 格式
+                    if (!requestsData.requests || !Array.isArray(requestsData.requests)) {
+                        throw new Error('JSON 格式错误，应包含 "requests" 数组');
+                    }
+
+                    // 验证每个 request 项是否包含 request 字段
+                    for (let i = 0; i < requestsData.requests.length; i++) {
+                        if (!requestsData.requests[i].request) {
+                            throw new Error(`第 ${i + 1} 个任务缺少 request 字段`);
+                        }
+                    }
+
+                    batchFileBtn.disabled = true;
+                    batchFileBtn.textContent = '⏳ 批量派送中...';
+                    outputContainer.innerHTML = '';
+
+                    // 调用批量接口
+                    const response = await fetch(`/api/cli/async/batch/sequential/System/${encodeURIComponent(projectId)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestsData)
+                    });
+
+                    const result = await response.json();
+                    if (result.code === 200) {
+                        // 批量派送只返回追踪 ID，清空之前的输出后只显示追踪ID
+                        outputContainer.innerHTML = '';
+                        const traceId = result.msg || result.data || '未知';
+                        showMessage(`📦 批量任务已开始执行`, 'success');
+                        showMessage(`🔖 批次追踪ID: ${traceId}`, 'system');
+                    } else {
+                        throw new Error(result.msg || '批量派送失败');
+                    }
+
+                    batchFileBtn.disabled = false;
+                    batchFileBtn.textContent = '📦 批量派送';
+                } catch (error) {
+                    console.error('批量派送失败:', error);
+                    showMessage('批量派送失败: ' + error.message, 'error');
+                    batchFileBtn.disabled = false;
+                    batchFileBtn.textContent = '📦 批量派送';
+                }
+
+                // 重置文件输入，允许重复选择同一文件
+                e.target.value = '';
+            });
+
+            // 在线创建批量任务弹窗
+            const onlineBatchBtn = document.getElementById('onlineBatchBtn');
+            const batchModal = document.getElementById('batchModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+            const batchJsonEditor = document.getElementById('batchJsonEditor');
+            const resetTemplateBtn = document.getElementById('resetTemplateBtn');
+            const modalSendBtn = document.getElementById('modalSendBtn');
+
+            // 默认模板
+            const defaultTemplate = `{
+  "requests": [
+    {
+      "request": "请输出当前项目所在的 Git 分支名称"
+    },
+    {
+      "request": "请梳理当前项目的核心逻辑和架构，输出项目结构说明"
+    }
+  ]
+}`;
+
+            batchJsonEditor.value = defaultTemplate;
+
+            // 打开弹窗
+            onlineBatchBtn.addEventListener('click', () => {
+                batchModal.classList.add('active');
+                batchJsonEditor.focus();
+            });
+
+            // 关闭弹窗
+            modalCloseBtn.addEventListener('click', () => {
+                batchModal.classList.remove('active');
+            });
+
+            // 点击遮罩关闭
+            batchModal.addEventListener('click', (e) => {
+                if (e.target === batchModal) {
+                    batchModal.classList.remove('active');
+                }
+            });
+
+            // ESC 关闭
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && batchModal.classList.contains('active')) {
+                    batchModal.classList.remove('active');
+                }
+            });
+
+            // 重置模板
+            resetTemplateBtn.addEventListener('click', () => {
+                batchJsonEditor.value = defaultTemplate;
+                batchJsonEditor.focus();
+            });
+
+            // 立即派送
+            modalSendBtn.addEventListener('click', async () => {
+                const urlParams2 = new URLSearchParams(window.location.search);
+                const projectId = urlParams2.get('projectId');
+                if (!projectId) {
+                    showMessage('未指定项目ID，请从项目列表页面进入', 'error');
+                    return;
+                }
+
+                const content = batchJsonEditor.value.trim();
+                if (!content) {
+                    showMessage('任务内容不能为空', 'warning');
+                    return;
+                }
+
+                let requestsData;
+                try {
+                    requestsData = JSON.parse(content);
+                } catch (parseError) {
+                    showMessage('JSON 格式错误，请检查语法', 'error');
+                    return;
+                }
+
+                if (!requestsData.requests || !Array.isArray(requestsData.requests)) {
+                    showMessage('JSON 格式错误，应包含 "requests" 数组', 'error');
+                    return;
+                }
+
+                if (requestsData.requests.length === 0) {
+                    showMessage('requests 数组不能为空', 'warning');
+                    return;
+                }
+
+                for (let i = 0; i < requestsData.requests.length; i++) {
+                    if (!requestsData.requests[i].request) {
+                        showMessage(`第 ${i + 1} 个任务缺少 request 字段`, 'error');
+                        return;
+                    }
+                }
+
+                // 关闭弹窗
+                batchModal.classList.remove('active');
+
+                // 清空输出区域
+                outputContainer.innerHTML = '';
+
+                try {
+                    const response = await fetch(`/api/cli/async/batch/sequential/System/${encodeURIComponent(projectId)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestsData)
+                    });
+
+                    const result = await response.json();
+                    if (result.code === 200) {
+                        // 在线批量派送只返回追踪 ID
+                        const traceId = result.msg || result.data || '未知';
+                        showMessage(`📦 批量任务已开始执行，共 ${requestsData.requests.length} 个任务`, 'success');
+                        showMessage(`🔖 批次追踪ID: ${traceId}`, 'system');
+                    } else {
+                        throw new Error(result.msg || '批量派送失败');
+                    }
+                } catch (error) {
+                    console.error('批量派送失败:', error);
+                    showMessage('批量派送失败: ' + error.message, 'error');
+                }
+            });
+        });
+
+        // 获取访问者 IP
+        function fetchIP() {
+            fetch('/api/userpath/ip')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ip) {
+                        document.getElementById('ip').textContent = data.ip;
+                        
+                        // 显示实际 IP（如果存在）
+                        if (data.actualIP) {
+                            document.getElementById('actualIP').textContent = data.actualIP;
+                            document.getElementById('actualIPRow').style.display = 'block';
+                        }
+                    } else {
+                        document.getElementById('ip').textContent = '获取失败';
+                    }
+                })
+                .catch(error => {
+                    console.error('获取 IP 失败:', error);
+                    document.getElementById('ip').textContent = '获取失败';
+                });
+        }
+
+        // 显示项目信息提示
+        function showProjectInfoNotice(project) {
+            const pathInfo = document.getElementById('pathInfo');
+            if (pathInfo && !pathInfo.querySelector('.project-info-notice')) {
+                const notice = document.createElement('div');
+                notice.className = 'project-info-notice';
+                notice.style.cssText = 'background: #f0f9ff; border: 2px solid #0ea5e9; padding: 15px 20px; border-radius: 8px; margin-top: 15px; color: #0369a1; font-size: 14px; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);';
+                notice.innerHTML = `
+                    <div style="margin-bottom: 8px; font-weight: bold; font-size: 15px;">📦 项目信息</div>
+                    <div style="margin-bottom: 5px;">项目名称：<strong>${escapeHtml(project.projectName)}</strong></div>
+                    <div>工作目录：<strong style="background: #e0f2fe; padding: 3px 8px; border-radius: 4px; font-family: monospace;">${escapeHtml(project.localPath)}</strong></div>
+                `;
+                pathInfo.parentNode.insertBefore(notice, pathInfo.nextSibling);
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 添加输出到控制台（正序追加，新消息在底部）
+        function appendOutput(text, type = 'info') {
+            const container = document.getElementById('sse-execution-output-container');
+            if (!container) {
+                console.error('Output container not found');
+                return;
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.cssText = `
+                margin-bottom: 10px;
+                padding: 12px 15px;
+                border-radius: 6px;
+                border-left: 4px solid;
+                background: ${type === 'error' ? '#fef2f2' : type === 'warning' ? '#fffbeb' : type === 'success' ? '#ecfdf5' : '#eff6ff'};
+                border-left-color: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : type === 'success' ? '#10b981' : '#3b82f6'};
+                font-size: 14px;
+                line-height: 1.6;
+                color: #333;
+                position: relative;
+                z-index: 1;
+            `;
+
+            let icon = '💬';
+            if (type === 'error') icon = '❌';
+            else if (type === 'warning') icon = '⚠️';
+            else if (type === 'success') icon = '✅';
+            else if (type === 'info') icon = 'ℹ️';
+
+            const escapedText = escapeHtml(text);
+            messageDiv.innerHTML = `<span style="margin-right: 6px;">${icon}</span>${escapedText}`;
+
+            // 正序追加：新消息追加到最底部
+            container.appendChild(messageDiv);
+            // 滚动到底部查看最新消息
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showMessage(message, type = 'info') {
+            appendOutput(message, type);
+        }
+    </script>
+</body>
+</html>

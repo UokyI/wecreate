@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志调试 - WeCreate</title>
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --container-bg: white;
+            --text-color: #333;
+            --border-color: #ddd;
+            --input-bg: white;
+            --input-border: #ddd;
+            --btn-primary-bg: #007bff;
+            --btn-primary-hover: #0056b3;
+            --log-item-bg: #f8f9fa;
+            --log-content-bg: white;
+        }
+
+        .dark-theme {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --border-color: #555;
+            --input-bg: #3d3d3d;
+            --input-border: #555;
+            --btn-primary-bg: #0069d9;
+            --btn-primary-hover: #0062cc;
+            --log-item-bg: #3d3d3d;
+            --log-content-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .search-box {
+            background: var(--container-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .search-box h2 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .search-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .search-item label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .search-item input {
+            padding: 8px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .search-item input:focus {
+            outline: none;
+            border-color: var(--btn-primary-bg);
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--btn-primary-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--btn-primary-hover);
+        }
+
+        .log-container {
+            background: var(--container-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .log-item {
+            background: var(--log-item-bg);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .log-time {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .log-level {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .log-level.INFO {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .log-level.DEBUG {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .log-level.WARN {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .log-level.ERROR {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .log-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: var(--text-color);
+        }
+
+        .no-logs {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <a href="/list.html" class="navbar-logo">
+                    <span>🚀</span>
+                    <span>WeCreate</span>
+                </a>
+                <div class="navbar-menu" id="navbarMenu">
+                    <a href="/index.html" class="navbar-menu-item">
+                        <span class="icon">📁</span>
+                        <span>项目管理</span>
+                    </a>
+                    <a href="/excrecord.html" class="navbar-menu-item">
+                        <span class="icon">💬</span>
+                        <span>执行记录</span>
+                    </a>
+                    <a href="/pro/index.html" class="navbar-menu-item">
+                        <span class="icon">📤</span>
+                        <span>派发任务</span>
+                    </a>
+                    <a href="/async/ass/index.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">⚡</span>
+                        <span>异步测试</span>
+                    </a>
+                    <a href="/debug.html" class="navbar-menu-item active" style="display: none;">
+                        <span class="icon">🐛</span>
+                        <span>日志调试</span>
+                    </a>
+                    <a href="/lan.html" class="navbar-menu-item">
+                        <span class="icon">📡</span>
+                        <span>局域网访问</span>
+                    </a>
+                    <a href="/settings.html" class="navbar-menu-item">
+                        <span class="icon">⚙️</span>
+                        <span>系统配置</span>
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDarkTheme()" title="切换主题 (F8)">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <div class="navbar-toggle" onclick="toggleNavbarMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="container">
+            <div class="search-box">
+                <h2>根据 Trace ID 查询日志</h2>
+                <div class="search-row">
+                    <div class="search-item" style="flex: 1;">
+                        <label for="traceId">Trace ID</label>
+                        <input type="text" id="traceId" placeholder="输入 Trace ID">
+                    </div>
+                    <div class="search-item">
+                        <button class="btn btn-primary" onclick="searchLogs()">查询</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="log-container" id="logContainer">
+                <div class="no-logs">请输入 Trace ID 查询日志</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入导航栏 JS -->
+    <script src="js/navbar.js"></script>
+    <script>
+        function searchLogs() {
+            const traceId = document.getElementById('traceId').value.trim();
+            if (!traceId) {
+                alert('请输入 Trace ID');
+                return;
+            }
+            // 这里添加查询逻辑
+            console.log('查询 Trace ID:', traceId);
+        }
+    </script>
+</body>
+</html>

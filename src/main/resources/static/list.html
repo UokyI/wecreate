@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeCreate 系统 - 导航</title>
+    <link rel="stylesheet" href="css/navbar.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .nav-link {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #495057;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .nav-link:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .nav-link h3 {
+            margin: 0 0 5px 0;
+            color: #007bff;
+        }
+        .nav-link p {
+            margin: 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        body.dark-theme .container {
+            background-color: #2d2d2d;
+        }
+        body.dark-theme h1 {
+            color: #e0e0e0;
+        }
+        body.dark-theme .nav-link {
+            background-color: #3d3d3d;
+            border-color: #555;
+            color: #c0c0c0;
+        }
+        body.dark-theme .nav-link:hover {
+            background-color: #4d4d4d;
+        }
+        body.dark-theme .nav-link h3 {
+            color: #4da6ff;
+        }
+        body.dark-theme .nav-link p {
+            color: #a0a0a0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <a href="/list.html" class="navbar-logo">
+                    <span>🚀</span>
+                    <span>WeCreate</span>
+                </a>
+                <div class="navbar-menu" id="navbarMenu">
+                    <a href="/index.html" class="navbar-menu-item">
+                        <span class="icon">📁</span>
+                        <span>项目管理</span>
+                    </a>
+                    <a href="/excrecord.html" class="navbar-menu-item">
+                        <span class="icon">💬</span>
+                        <span>执行记录</span>
+                    </a>
+                    <a href="/pro/index.html" class="navbar-menu-item">
+                        <span class="icon">📤</span>
+                        <span>派发任务</span>
+                    </a>
+                    <a href="/async/ass/index.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">⚡</span>
+                        <span>异步测试</span>
+                    </a>
+                    <a href="/debug.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">🐛</span>
+                        <span>日志调试</span>
+                    </a>
+                    <a href="/lan.html" class="navbar-menu-item">
+                        <span class="icon">📡</span>
+                        <span>局域网访问</span>
+                    </a>
+                    <a href="/settings.html" class="navbar-menu-item">
+                        <span class="icon">⚙️</span>
+                        <span>系统配置</span>
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDarkTheme()" title="切换主题 (F8)">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <div class="navbar-toggle" onclick="toggleNavbarMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+    <div class="container">
+        <h1>WeCreate 系统</h1>
+
+        <div class="nav-links">
+            <a href="/pro/index.html" class="nav-link">
+                <h3>派发任务</h3>
+                <p>与 Qwen Code CLI 进行交互，执行各种任务</p>
+            </a>
+            <a href="/async/ass/index.html" class="nav-link">
+                <h3>异步测试</h3>
+                <p>直接返回追踪 ID</p>
+            </a>
+            <a href="/index.html" class="nav-link">
+                <h3>项目管理</h3>
+                <p>管理 Git 项目，自动 clone 到本地</p>
+            </a>
+            <a href="/excrecord.html" class="nav-link">
+                <h3>执行记录</h3>
+                <p>查看、搜索和管理执行记录</p>
+            </a>
+            <a href="/debug.html" class="nav-link">
+                <h3>日志页面</h3>
+                <p>用于直接查询追踪信息接口</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- 引入导航栏 JS -->
+    <script src="js/navbar.js"></script>
+</body>
+</html>

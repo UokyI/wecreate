@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent同步执行助手</title>
+    <style>
+        :root {
+            /* 亮色主题 */
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --header-border: #dddddd;
+            --user-info-bg: #f0f8ff;
+            --path-info-bg: #fff8dc;
+            --warning-bg: #fcf8e3;
+            --warning-border: #ff9800;
+            --container-border: #dddddd;
+            --input-bg: #ffffff;
+            --input-border: #dddddd;
+            --btn-primary-bg: #007bff;
+            --btn-primary-hover: #0056b3;
+            --btn-disabled-bg: #cccccc;
+            --output-border: #dddddd;
+            --message-info-bg: #e7f3ff;
+            --message-info-border: #2196F3;
+            --message-complete-bg: #dff0d8;
+            --message-complete-border: #4CAF50;
+            --message-error-bg: #f2dede;
+            --message-error-border: #f44336;
+            --message-debug-bg: #fffade;
+            --message-debug-border: #f3c221;
+        }
+
+        .dark-theme {
+            /* 暗色主题 */
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --header-border: #555555;
+            --user-info-bg: #1e3c5f;
+            --path-info-bg: #5d5211;
+            --warning-bg: #5c551b;
+            --warning-border: #ff9800;
+            --container-border: #555555;
+            --input-bg: #3d3d3d;
+            --input-border: #555555;
+            --btn-primary-bg: #0069d9;
+            --btn-primary-hover: #0062cc;
+            --btn-disabled-bg: #555555;
+            --output-border: #555555;
+            --message-info-bg: #1e3c5f;
+            --message-info-border: #2196F3;
+            --message-complete-bg: #2d5016;
+            --message-complete-border: #4CAF50;
+            --message-error-bg: #5c1d1d;
+            --message-error-border: #f44336;
+            --message-debug-bg: #5c551b;
+            --message-debug-border: #f3c221;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--header-border);
+        }
+        
+        .user-info {
+            background-color: var(--user-info-bg);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .path-info {
+            background-color: var(--path-info-bg);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .warning {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .input-section {
+            border: 1px solid var(--container-border);
+            padding: 20px;
+            border-radius: 5px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            resize: vertical;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        
+        button {
+            background-color: var(--btn-primary-bg);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        button:hover {
+            background-color: var(--btn-primary-hover);
+        }
+        
+        button:disabled {
+            background-color: var(--btn-disabled-bg);
+            cursor: not-allowed;
+        }
+        
+        .output-section {
+            border: 1px solid var(--output-border);
+            padding: 20px;
+            border-radius: 5px;
+            min-height: 200px;
+        }
+        
+        #output {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .message {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+            white-space: pre-wrap;
+            word-break: break-word; 
+        }
+        
+        .info {
+            background-color: var(--message-info-bg);
+            border-left: 4px solid var(--message-info-border);
+        }
+
+        .complete {
+            background-color: var(--message-complete-bg);
+            border-left: 4px solid var(--message-complete-border);
+        }
+
+        .success {
+            background-color: var(--message-complete-bg);
+            border-left: 4px solid var(--message-complete-border);
+        }
+        
+        .error {
+            background-color: var(--message-error-bg);
+            border-left: 4px solid var(--message-error-border);
+        }
+        .debug {
+            background-color: var(--message-debug-bg);
+            border-left: 4px solid var(--message-debug-border);
+        }
+        
+        
+        .info-item {
+            margin: 5px 0;
+        }
+        
+        .note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .mode-toggle {
+            margin-bottom: 15px;
+        }
+        
+        .mode-toggle label {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Agent同步执行助手</h1>
+        <div class="user-info">
+            <div class="info-item">IP: <span id="ip">加载中...</span></div>
+            <div class="info-item" id="actualIPRow" style="display: none;">实际IP: <span id="actualIP"></span></div>
+        </div>
+    </div>
+    
+    <div class="path-info" id="pathInfo">
+        可操作路径: <span id="path">加载中...</span>
+    </div>
+    
+    <div class="note" id="ipNote" style="display: none;">
+        注意：检测到您正在使用本地地址访问，实际IP地址如上所示。
+        如果需要基于实际IP地址的权限，请在user.json中配置实际IP地址。
+    </div>
+    
+    <div class="container">
+        <div class="input-section">
+            <h2>输入需求描述</h2>
+            <textarea id="requestInput" placeholder="例如：在当前文件夹中，创建一个springboot后端项目&#10;或者：请新增一个/check接口，get请求方式，接口返回字符串check"></textarea>
+            <div class="mode-toggle">
+                <label>
+                    <input type="radio" name="executeMode" value="sync" checked> 同步执行
+                </label>
+                <label>
+                    <input type="radio" name="executeMode" value="async"> 异步执行
+                </label>
+            </div>
+            <button id="executeBtn">执行</button>
+        </div>
+        
+        <div class="output-section">
+            <h2>执行结果</h2>
+            <div id="output"></div>
+        </div>
+    </div>
+
+    <script>
+        // 添加键盘快捷键监听器
+        document.addEventListener('keydown', function(event) {
+            // 检查是否按下了 F2 键
+            if (event.key === 'F2') {
+                event.preventDefault();
+                window.location.href = '/';
+            }
+            // 检查是否按下了 F8 键切换主题
+            else if (event.key === 'F8') {
+                event.preventDefault();
+                document.body.classList.toggle('dark-theme');
+                // 保存主题偏好到 localStorage
+                const isDarkTheme = document.body.classList.contains('dark-theme');
+                localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
+            }
+        });
+        
+        // 页面加载时恢复主题设置
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+            }
+            
+            // 获取当前用户信息和可操作路径
+            const currentUrl = window.location.href;
+            fetch(`/api/userpath/info?url=${encodeURIComponent(currentUrl)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('ip').textContent = data.ip;
+                        document.getElementById('path').textContent = data.path;
+                        document.getElementById('executeBtn').disabled = false;
+                        
+                        // 显示实际IP（如果存在）
+                        if (data.actualIP) {
+                            document.getElementById('actualIP').textContent = data.actualIP;
+                            document.getElementById('actualIPRow').style.display = 'block';
+                            document.getElementById('ipNote').style.display = 'block';
+                        }
+                    } else {
+                        document.getElementById('ip').textContent = data.ip || '未知';
+                        document.getElementById('path').textContent = '无权限';
+                        document.getElementById('pathInfo').className = 'path-info warning';
+                        document.getElementById('executeBtn').disabled = true;
+                        
+                        // 显示实际IP（如果存在）
+                        if (data.actualIP) {
+                            document.getElementById('actualIP').textContent = data.actualIP;
+                            document.getElementById('actualIPRow').style.display = 'block';
+                            document.getElementById('ipNote').style.display = 'block';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('获取用户信息失败:', error);
+                    document.getElementById('ip').textContent = '获取失败';
+                    document.getElementById('path').textContent = '获取失败';
+                    document.getElementById('pathInfo').className = 'path-info warning';
+                    document.getElementById('executeBtn').disabled = true;
+                });
+        });
+        
+        const requestInput = document.getElementById('requestInput');
+        const executeBtn = document.getElementById('executeBtn');
+        const output = document.getElementById('output');
+        const modeToggle = document.getElementsByName('executeMode');
+        
+        executeBtn.addEventListener('click', () => {
+            const request = requestInput.value.trim();
+            if (!request) {
+                alert('请输入需求描述');
+                return;
+            }
+            
+            // 获取执行模式
+            const mode = Array.from(modeToggle).find(radio => radio.checked).value;
+            
+            // 清空输出区域
+            output.innerHTML = '';
+            
+            // 禁用按钮防止重复点击
+            executeBtn.disabled = true;
+            
+            const projectName = getProjectName();
+            
+            if (mode === 'sync') {
+                // 发送同步POST请求
+                fetch(`/api/cli/sync/${projectName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: request
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        // 修改这里以正确显示同步接口返回的数据
+                        if (Array.isArray(data.data)) {
+                            // 如果是数组，逐条显示消息
+                            data.data.forEach(message => {
+                                addMessage(message, 'success');
+                            });
+                        } else {
+                            // 如果不是数组，直接显示
+                            addMessage(data.data, 'success');
+                        }
+                    } else {
+                        // 处理错误情况
+                        if (Array.isArray(data.data)) {
+                            data.data.forEach(message => {
+                                addMessage('错误: ' + message, 'error');
+                            });
+                        } else {
+                            addMessage('错误: ' + data.msg, 'error');
+                        }
+                    }
+                    executeBtn.disabled = false;
+                })
+                .catch(error => {
+                    addMessage('错误: ' + error.message, 'error');
+                    executeBtn.disabled = false;
+                });
+            } else {
+                // 发送异步POST请求
+                fetch(`/api/cli/async/${projectName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: request
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        // 修改这里以正确显示异步接口返回的数据
+                        if (Array.isArray(data.data)) {
+                            // 如果是数组，逐条显示消息
+                            data.data.forEach(message => {
+                                addMessage(message, 'success');
+                            });
+                        } else {
+                            // 如果不是数组，直接显示
+                            addMessage(data.data, 'success');
+                        }
+                    } else {
+                        // 处理错误情况
+                        if (Array.isArray(data.data)) {
+                            data.data.forEach(message => {
+                                addMessage('错误: ' + message, 'error');
+                            });
+                        } else {
+                            addMessage('错误: ' + data.msg, 'error');
+                        }
+                    }
+                    executeBtn.disabled = false;
+                })
+                .catch(error => {
+                    addMessage('错误: ' + error.message, 'error');
+                    executeBtn.disabled = false;
+                });
+            }
+        });
+
+        function getProjectName() {
+            const currentUrl = window.location.href;
+            // 使用正则表达式匹配倒数第二组//里的值
+            const regex = /\/([^\/]+)\/[^\/]*$/;
+            const match = currentUrl.match(regex);
+            const result = match ? match[1] : null;
+
+            return result
+        }
+        
+        function addMessage(message, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${type}`;
+            if (message && message.startsWith('\n')) {
+                console.log("收到Message的第一行为空白行:" + message);
+                message = message.substring(1);
+            }
+            if (message && message.trim() !== '') {
+                messageElement.textContent = `${message}`;
+                // console.log("追加Message:" + message);
+                output.prepend(messageElement);
+            }
+        }
+    </script>
+</body>
+</html>

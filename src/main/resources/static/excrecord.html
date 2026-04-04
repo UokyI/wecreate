@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>执行记录 - WeCreate</title>
+    <link rel="stylesheet" href="css/prompts.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <style>
+        /* 搜索表单样式 */
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .search-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .search-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .search-item label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-item input,
+        .search-item select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-item input:focus,
+        .search-item select:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+
+        .search-item input::placeholder {
+            color: #999;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            transition: border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-actions .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .search-actions .btn span {
+            font-size: 16px;
+        }
+
+        .search-actions .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        .search-actions .btn-primary:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #643a8f 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-actions .btn-default {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .search-actions .btn-default:hover {
+            background-color: var(--hover-bg);
+            border-color: #1890ff;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+            transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 时间快捷按钮样式 */
+        .time-shortcuts {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .time-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .time-btn:hover {
+            background-color: var(--hover-bg);
+            border-color: #1890ff;
+            transform: translateY(-1px);
+        }
+
+        .time-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 卡片样式 - 支持暗色主题 */
+        .excrecord-card {
+            background: var(--container-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .excrecord-card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-color);
+            transition: border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .excrecord-card-body {
+            padding: 24px;
+        }
+
+        .excrecord-record-count {
+            font-size: 13px;
+            color: var(--muted-text-color, #999);
+            transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 隐藏执行内容列 */
+        #promptsTable th:nth-child(4),
+        #promptsTable td:nth-child(4) {
+            display: none;
+        }
+
+        /* 创建时间列不换行，完整显示 */
+        #promptsTable th:nth-child(2),
+        #promptsTable td:nth-child(2) {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 项目名称列居中显示 */
+        #promptsTable th:nth-child(3),
+        #promptsTable td:nth-child(3) {
+            text-align: center;
+        }
+
+        /* 操作列垂直居中对齐，确保边框对齐 */
+        #promptsTable th:last-child,
+        #promptsTable td:last-child {
+            vertical-align: middle;
+        }
+
+        /* 确保表格行的对齐一致性 */
+        #promptsTable td.actions {
+            vertical-align: middle;
+            padding: 12px;
+        }
+
+        #promptsTable td.actions .btn {
+            margin: 0;
+            vertical-align: middle;
+        }
+
+        /* 暗色主题下拉框适配 */
+        .dark-theme .search-item select,
+        body.dark-theme .search-item select {
+            background-color: #3d3d3d !important;
+            color: #e0e0e0 !important;
+            border-color: #555 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23e0e0e0' d='M6 8L1 3h10z'/%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 12px center !important;
+            padding-right: 36px !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+        }
+
+        .dark-theme .search-item select:hover,
+        body.dark-theme .search-item select:hover {
+            border-color: #40a9ff !important;
+        }
+
+        .dark-theme .search-item select option,
+        body.dark-theme .search-item select option {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <a href="/list.html" class="navbar-logo">
+                    <span>🚀</span>
+                    <span>WeCreate</span>
+                </a>
+                <div class="navbar-menu" id="navbarMenu">
+                    <a href="/index.html" class="navbar-menu-item">
+                        <span class="icon">📁</span>
+                        <span>项目管理</span>
+                    </a>
+                    <a href="/excrecord.html" class="navbar-menu-item active">
+                        <span class="icon">💬</span>
+                        <span>执行记录</span>
+                    </a>
+                    <a href="/pro/index.html" class="navbar-menu-item">
+                        <span class="icon">📤</span>
+                        <span>派发任务</span>
+                    </a>
+                    <a href="/async/ass/index.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">⚡</span>
+                        <span>异步测试</span>
+                    </a>
+                    <a href="/debug.html" class="navbar-menu-item" style="display: none;">
+                        <span class="icon">🐛</span>
+                        <span>日志调试</span>
+                    </a>
+                    <a href="/lan.html" class="navbar-menu-item">
+                        <span class="icon">📡</span>
+                        <span>局域网访问</span>
+                    </a>
+                    <a href="/settings.html" class="navbar-menu-item">
+                        <span class="icon">⚙️</span>
+                        <span>系统配置</span>
+                    </a>
+                </div>
+            </div>
+            <div class="navbar-right">
+                <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleDarkTheme()" title="切换主题 (F8)">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <div class="navbar-toggle" onclick="toggleNavbarMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+    <div class="main-container">
+<!--        <div class="page-header" style="margin-bottom: 24px;">-->
+<!--            <h1 style="font-size: 24px; font-weight: 600; color: #333; margin-bottom: 8px;">执行记录</h1>-->
+<!--            <p style="font-size: 14px; color: #666;">查看、搜索和管理执行记录</p>-->
+<!--        </div>-->
+
+        <!-- 搜索筛选区域 -->
+        <div class="excrecord-card" style="margin-bottom: 24px;">
+            <div class="excrecord-card-header">
+                <h2 class="card-title">搜索筛选</h2>
+            </div>
+            <div class="excrecord-card-body">
+                <div class="search-form">
+                    <div class="search-row">
+                        <div class="search-item">
+                            <label for="searchKeyword">关键词搜索</label>
+                            <input type="text" id="searchKeyword" placeholder="输入关键词搜索执行记录...">
+                        </div>
+                        <div class="search-item">
+                            <label for="searchIp">请求IP</label>
+                            <select id="searchIp">
+                                <option value="">全部IP</option>
+                            </select>
+                        </div>
+                        <div class="search-item">
+                            <label for="searchProject">所属项目</label>
+                            <select id="searchProject">
+                                <option value="">全部项目</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search-row">
+                        <div class="search-item" style="grid-column: 1 / -1;">
+                            <label>时间范围</label>
+                            <div class="time-shortcuts">
+                                <button class="time-btn" onclick="setTimeRange('custom')" id="timeCustomBtn">自定义</button>
+                                <button class="time-btn" onclick="setTimeRange('1d')" id="time1dBtn">最近一天</button>
+                                <button class="time-btn" onclick="setTimeRange('1w')" id="time1wBtn">最近一周</button>
+                                <button class="time-btn" onclick="setTimeRange('1m')" id="time1mBtn">最近一月</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-row" id="customTimeRow">
+                        <div class="search-item">
+                            <label for="startTime">开始时间</label>
+                            <input type="datetime-local" id="startTime">
+                        </div>
+                        <div class="search-item">
+                            <label for="endTime">结束时间</label>
+                            <input type="datetime-local" id="endTime">
+                        </div>
+                    </div>
+                    <div class="search-actions">
+                        <button class="btn btn-primary" onclick="searchPrompts()">
+                            <span>🔍</span> 搜索
+                        </button>
+                        <button class="btn btn-default" onclick="clearSearchConditions()">
+                            <span>🗑️</span> 清空
+                        </button>
+                        <button class="btn btn-default" onclick="loadPrompts()">
+                            <span>🔄</span> 刷新
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据表格 -->
+        <div class="excrecord-card">
+            <div class="excrecord-card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 class="card-title">执行记录列表</h2>
+                <span class="excrecord-record-count" id="totalCount">共 0 条记录</span>
+            </div>
+            <div class="excrecord-card-body">
+        
+        <table id="promptsTable">
+            <thead>
+                <tr>
+                    <th style="display: none;">ID</th>
+                    <th>创建时间</th>
+                    <th>项目名称</th>
+                    <th>执行内容</th>
+                    <th>耗时</th>
+                    <th style="display: none;">工作目录</th>
+                    <th>Trace ID</th>
+                    <th>执行IP</th>
+                    <th style="display: none;">可用性</th>
+                    <th style="display: none;">评价人</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="promptsTableBody">
+                <!-- 数据将通过JavaScript动态加载 -->
+            </tbody>
+        </table>
+        
+        <div class="pagination" id="pagination">
+            <!-- 分页按钮将通过JavaScript动态加载 -->
+        </div>
+    </div>
+    
+    <!-- 查看详情的模态框 -->
+    <div id="detailModal" class="modal fixed-header">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>输出详情</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="logsContainer">
+                    <!-- 日志内容将通过JavaScript动态加载 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 评分模态框 -->
+    <div id="scoreModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>可用性</h2>
+                <span class="close" onclick="closeScoreModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="scoreForm">
+                    <input type="hidden" id="scoreTraceId">
+<!--                <label for="scoreValue">(n*0.1):</label>-->
+                    <!-- 修改评分输入为水平方向的评分显示 -->
+                    <div id="horizontalScoreBar" class="score-bar-horizontal">
+                        <div class="score-option" data-value="10">10</div>
+                        <div class="score-option" data-value="9">9</div>
+                        <div class="score-option" data-value="8">8</div>
+                        <div class="score-option" data-value="7">7</div>
+                        <div class="score-option" data-value="6">6</div>
+                        <div class="score-option" data-value="5">5</div>
+                        <div class="score-option" data-value="4">4</div>
+                        <div class="score-option" data-value="3">3</div>
+                        <div class="score-option" data-value="2">2</div>
+                        <div class="score-option" data-value="1">1</div>
+                        <div class="score-option" data-value="0">0</div>
+                    </div>
+                    <input type="hidden" id="scoreValue" class="score-input" required>
+                    <br><br>
+                    <button type="submit" class="btn btn-score">提交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/excrecord.js"></script>
+    <script src="js/navbar.js"></script>
+</body>
+</html>

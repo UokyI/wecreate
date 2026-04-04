@@ -1,0 +1,19 @@
+server:
+  address: 0.0.0.0
+  port: 10111
+spring:
+  profiles:
+    active: dev
+mybatis-plus:
+  global-config:
+    enable-sql-runner: true
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    use-generated-keys: false
+
+application:
+  static-resource:
+    enabled: true
